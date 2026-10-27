@@ -93,13 +93,19 @@
 			});
 		});
 
+		// The button shows an icon (Layout.astro); its name, for screen readers and as a tooltip, follows the mode.
 		document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
-			button.textContent = themeToggleLabel(button);
+			function label() {
+				var text = themeToggleLabel(button);
+				button.setAttribute('aria-label', text);
+				button.setAttribute('title', text);
+			}
+			label();
 			button.addEventListener('click', function () {
 				prefs.theme = prefs.theme === 'dark' ? 'light' : 'dark';
 				apply(prefs);
 				save(prefs);
-				button.textContent = themeToggleLabel(button);
+				label();
 			});
 		});
 	});

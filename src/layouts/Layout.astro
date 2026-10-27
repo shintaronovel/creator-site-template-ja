@@ -135,8 +135,17 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 						data-theme-toggle
 						data-label-to-light={t.switchToLight}
 						data-label-to-dark={t.switchToDark}
+						aria-label={t.switchToLight}
+						title={t.switchToLight}
 					>
-						{t.switchToLight}
+						{/* The mode it switches to: a sun on dark pages, a moon on light ones (the stylesheet picks one). */}
+						<svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true">
+							<circle cx="12" cy="12" r="4" />
+							<path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+						</svg>
+						<svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true">
+							<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
+						</svg>
 					</button>
 				)}
 			</div>
@@ -326,8 +335,7 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 	}
 
 	.theme-toggle {
-		font-size: 0.9rem;
-		font-weight: 600;
+		display: flex;
 		color: var(--accent);
 		background: none;
 		border: none;
@@ -335,8 +343,27 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 		cursor: pointer;
 	}
 
-	.theme-toggle:hover {
-		text-decoration: underline;
+	.theme-toggle svg {
+		width: 1.25rem;
+		height: 1.25rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.theme-toggle:hover svg {
+		stroke-width: 2.5;
+	}
+
+	.theme-toggle__moon,
+	:root[data-theme='light'] .theme-toggle__sun {
+		display: none;
+	}
+
+	:root[data-theme='light'] .theme-toggle__moon {
+		display: block;
 	}
 
 	.settings__panel {
