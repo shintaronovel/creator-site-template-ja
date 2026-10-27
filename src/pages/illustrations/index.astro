@@ -72,7 +72,9 @@ const genres = await getGenres();
 		gap: 0.5rem 1.25rem;
 	}
 
+	/* The ::after below widens what a finger can press (to 40px) without moving anything. */
 	.view-switch button {
+		position: relative;
 		display: flex;
 		color: var(--accent);
 		background: none;
@@ -82,9 +84,15 @@ const genres = await getGenres();
 		cursor: pointer;
 	}
 
+	.view-switch button::after {
+		content: '';
+		position: absolute;
+		inset: -0.5rem;
+	}
+
 	.view-switch svg {
-		width: 1.4rem;
-		height: 1.4rem;
+		width: 1.5rem;
+		height: 1.5rem;
 		fill: currentColor;
 	}
 
