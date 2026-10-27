@@ -20,8 +20,21 @@ const genres = await getGenres();
 	<div class="list-header">
 		<h1 class="page-title">{t.navIllustrations}</h1>
 		<div class="view-switch" role="group" aria-label={t.illustrationViewLabel}>
-			<button type="button" data-illustration-view-option="feed">{t.viewFeed}</button>
-			<button type="button" data-illustration-view-option="grid">{t.viewGrid}</button>
+			{/* Icons, with the names for screen readers and as a tooltip: pictures one under another, and tiles. */}
+			<button type="button" data-illustration-view-option="feed" aria-label={t.viewFeed} title={t.viewFeed}>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<rect x="5" y="2" width="14" height="9" rx="1.5" />
+					<rect x="5" y="13" width="14" height="9" rx="1.5" />
+				</svg>
+			</button>
+			<button type="button" data-illustration-view-option="grid" aria-label={t.viewGrid} title={t.viewGrid}>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<rect x="3" y="3" width="7.5" height="7.5" rx="1" />
+					<rect x="13.5" y="3" width="7.5" height="7.5" rx="1" />
+					<rect x="3" y="13.5" width="7.5" height="7.5" rx="1" />
+					<rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1" />
+				</svg>
+			</button>
 		</div>
 	</div>
 
@@ -51,7 +64,7 @@ const genres = await getGenres();
 		margin: 0;
 	}
 
-	/* Same look as the genre tabs in the header: the current view is plain text with an orange underline,
+	/* Like the genre tabs in the header: the current view is in the text color with an orange underline,
 	   the other one is orange because it can be pressed. */
 	.view-switch {
 		display: flex;
@@ -60,15 +73,19 @@ const genres = await getGenres();
 	}
 
 	.view-switch button {
-		font: inherit;
-		font-weight: 600;
-		white-space: nowrap;
+		display: flex;
 		color: var(--accent);
 		background: none;
 		border: none;
 		border-bottom: 2px solid transparent;
 		padding: 0 0 0.2rem;
 		cursor: pointer;
+	}
+
+	.view-switch svg {
+		width: 1.4rem;
+		height: 1.4rem;
+		fill: currentColor;
 	}
 
 	.view-switch button[aria-pressed='true'] {
