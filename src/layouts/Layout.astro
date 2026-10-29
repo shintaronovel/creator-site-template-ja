@@ -162,13 +162,13 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 		<main class:list={['wrap', { 'wrap--wide': wide }]}>
 			<slot />
 		</main>
-		{siteConfig.ads?.sidebar && !wide && (
-			<div class="sidebar-ad">
+		{siteConfig.ads?.sidebar && (
+			<div class:list={['sidebar-ad', { 'sidebar-ad--wide': wide }]}>
 				<AdSlot code={siteConfig.ads.sidebar} />
 			</div>
 		)}
-		{siteConfig.ads?.sidebarLeft && !wide && (
-			<div class="sidebar-ad sidebar-ad--left">
+		{siteConfig.ads?.sidebarLeft && (
+			<div class:list={['sidebar-ad sidebar-ad--left', { 'sidebar-ad--wide': wide }]}>
 				<AdSlot code={siteConfig.ads.sidebarLeft} />
 			</div>
 		)}
@@ -469,6 +469,24 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 		.sidebar-ad--left {
 			left: auto;
 			right: calc(50% + 21rem + 2rem);
+		}
+	}
+
+	/* Beside the 60rem column of a wide page (manga, illustrations): only on screens wide enough for it. */
+	@media (max-width: 1679px) {
+		.sidebar-ad--wide {
+			display: none;
+		}
+	}
+
+	@media (min-width: 1680px) {
+		.sidebar-ad--wide {
+			left: calc(50% + 30rem + 2rem);
+		}
+
+		.sidebar-ad--wide.sidebar-ad--left {
+			left: auto;
+			right: calc(50% + 30rem + 2rem);
 		}
 	}
 

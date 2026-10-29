@@ -546,12 +546,12 @@ content:
                 options:
                   format: html
               - name: sidebar
-                label: PCで見たときの本文の右側の余白
+                label: PCで見たときの右側の余白
                 type: code
                 options:
                   format: html
               - name: sidebarLeft
-                label: PCで見たときの本文の左側の余白
+                label: PCで見たときの左側の余白
                 type: code
                 options:
                   format: html
