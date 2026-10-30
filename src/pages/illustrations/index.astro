@@ -18,7 +18,8 @@ const genres = await getGenres();
 <Layout title={genres.length < 2 ? '' : t.illustrationListTitle} description={siteConfig.description} showAuthorLink showGenreNav wide>
 	<div hidden data-list-page="/illustrations"></div>
 	<div class="list-header">
-		<h1 class="page-title">{t.navIllustrations}</h1>
+		{/* With one genre this list is the top page (src/pages/index.astro), so a heading naming the genre says nothing new. */}
+		{genres.length >= 2 && <h1 class="page-title">{t.navIllustrations}</h1>}
 		<div class="view-switch" role="group" aria-label={t.illustrationViewLabel}>
 			{/* Icons, with the names for screen readers and as a tooltip: pictures one under another, and tiles. */}
 			<button type="button" data-illustration-view-option="feed" aria-label={t.viewFeed} title={t.viewFeed}>
@@ -65,9 +66,10 @@ const genres = await getGenres();
 	}
 
 	/* Like the genre tabs in the header: the current view is in the text color with an orange underline,
-	   the other one is orange because it can be pressed. */
+	   the other one is orange because it can be pressed. Stays on the right when there is no heading beside it. */
 	.view-switch {
 		display: flex;
+		margin-left: auto;
 		flex-wrap: wrap;
 		gap: 0.5rem 1.25rem;
 	}

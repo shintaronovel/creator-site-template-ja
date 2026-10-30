@@ -19,7 +19,8 @@ const LIST_FEED_INTERVAL = 5;
 
 <Layout title={genres.length < 2 ? '' : t.mangaListTitle} description={siteConfig.description} showAuthorLink showGenreNav>
 	<div hidden data-list-page="/manga"></div>
-	<h1 class="page-title">{t.navManga}</h1>
+	{/* With one genre this list is the top page (src/pages/index.astro), so a heading naming the genre says nothing new. */}
+	{genres.length >= 2 && <h1 class="page-title">{t.navManga}</h1>}
 	<ul class="work-list">
 		{
 			works.map((work, index) => (
