@@ -175,7 +175,8 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 		<footer class="site-footer">
 			<div class:list={['wrap site-footer__inner', { 'wrap--wide': wide }]}>
 				<span>&copy; {new Date().getFullYear()} {siteConfig.author}</span>
-				<a href="/privacy">{t.privacyPolicy}</a>
+				{/* No link to the page the reader is already on. */}
+				{Astro.url.pathname.replace(/\/+$/, '') !== '/privacy' && <a href="/privacy">{t.privacyPolicy}</a>}
 			</div>
 		</footer>
 	</body>
