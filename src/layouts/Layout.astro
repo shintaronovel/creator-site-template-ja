@@ -4,6 +4,7 @@ import { siteConfig, t } from '../site-config.mjs';
 import AdSlot from '../components/AdSlot.astro';
 import { getGenres, type Genre } from '../lib/catalog';
 import { getShareImageUrl, getSiteShareImage } from '../lib/share-card';
+import { getAvatarUrl } from '../lib/avatar';
 
 interface Props {
 	title: string;
@@ -43,6 +44,13 @@ const canonicalUrl = new URL(canonicalPath ?? Astro.url.pathname, Astro.site).to
 const shareSource = image ?? getSiteShareImage();
 const shareImageUrl = shareSource ? await getShareImageUrl(shareSource) : null;
 
+// The site's icon is the author's icon. 48px: browser tabs (shrunk) and search results (Google wants a multiple of 48).
+// 180px: a phone's home screen. Without an icon, browsers show their own blank one.
+const faviconUrl = await getAvatarUrl(48);
+const touchIconUrl = await getAvatarUrl(180);
+// Next to the author's name at the top left: 28px shown, twice that for high-density screens.
+const headerAvatarUrl = showAuthorLink ? await getAvatarUrl(56, 'webp') : undefined;
+
 const genreLinks: Record<Genre, { href: string; label: string }> = {
 	novels: { href: '/novels', label: t.navNovels },
 	manga: { href: '/manga', label: t.navManga },
@@ -58,7 +66,8 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		{faviconUrl && <link rel="icon" type="image/png" sizes="48x48" href={faviconUrl} />}
+		{touchIconUrl && <link rel="apple-touch-icon" href={touchIconUrl} />}
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<meta name="author" content={siteConfig.author} />
@@ -96,7 +105,8 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 				)}
 				{showAuthorLink && (
 					<a href="/author" class="author-link">
-						{siteConfig.author}
+						{headerAvatarUrl && <img class="author-link__avatar" src={headerAvatarUrl} width="28" height="28" alt="" />}
+						<span class="author-link__name">{siteConfig.author}</span>
 					</a>
 				)}
 				{readingControls ? (
@@ -300,9 +310,32 @@ const currentPath = currentTab ?? (Astro.url.pathname.replace(/\/+$/, '') || '/'
 		margin-block: -0.5rem;
 	}
 
-	/* A long pen name stops at two lines so the header stays short on phones; the author page shows it in full. */
 	.author-link {
 		margin-right: auto;
+		min-width: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.author-link:hover {
+		text-decoration: none;
+	}
+
+	.author-link:hover .author-link__name {
+		text-decoration: underline;
+	}
+
+	/* The name beside it says who it is, so no alt text. */
+	.author-link__avatar {
+		flex-shrink: 0;
+		width: 1.75rem;
+		height: 1.75rem;
+		border-radius: 50%;
+	}
+
+	/* A long pen name stops at two lines so the header stays short on phones; the author page shows it in full. */
+	.author-link__name {
 		min-width: 0;
 		overflow-wrap: anywhere;
 		font-size: 1rem;

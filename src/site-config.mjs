@@ -27,6 +27,12 @@ function buildSchema(t) {
 			.trim()
 			.nullish()
 			.transform((value) => value ?? ''),
+		// Shown at the top of the author page and used as the site's icon (browser tabs, search results). Empty: neither.
+		avatar: z
+			.string()
+			.trim()
+			.nullish()
+			.transform((value) => value ?? ''),
 		xAccount: z
 			.string()
 			.trim()
@@ -34,7 +40,7 @@ function buildSchema(t) {
 			.refine((value) => value === '' || /^[A-Za-z0-9_]{1,15}$/.test(value), { error: t.xAccountInvalid })
 			.nullish()
 			.transform((value) => value ?? ''),
-		// Optional text above the X link on the author page, like note on the other links.
+		// Optional description inside the X button on the author page, like note on the other links.
 		xNote: z.string().trim().nullish().transform((value) => value ?? ''),
 		// The creator's clock, for publish dates and times (scheduled episodes). Defaults to the language's usual zone.
 		timeZone: z
@@ -53,9 +59,9 @@ function buildSchema(t) {
 		links: z
 			.array(
 				z.object({
-					// Optional text shown above the link, e.g. where to buy a book.
+					// Optional description shown inside the button, under its text, e.g. what the link is for.
 					note: z.string().trim().nullish().transform((value) => value ?? ''),
-					// No longer shown (the row shows the address); kept optional so older files still load.
+					// The button's text. Empty: the service's name (X, YouTube...) or, for other sites, the address's domain.
 					label: z.string().trim().nullish().transform((value) => value ?? ''),
 					// https only: rejects javascript: and other schemes that could run code when clicked.
 					url: required(t.labelLinkUrl).pipe(z.url({ protocol: /^https$/, error: t.linkUrlMustBeHttps })),

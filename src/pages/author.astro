@@ -1,29 +1,38 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { siteConfig, t } from '../site-config.mjs';
+import { getAvatarUrl } from '../lib/avatar';
+import { linkService } from '../lib/link-services';
 
 const links = [
-	...(siteConfig.xAccount ? [{ note: siteConfig.xNote, label: 'X', url: `https://x.com/${siteConfig.xAccount}`, shown: `@${siteConfig.xAccount}` }] : []),
-	...siteConfig.links.map((link) => ({ ...link, shown: shownUrl(link.url) })),
-];
+	...(siteConfig.xAccount ? [{ note: siteConfig.xNote, label: '', url: `https://x.com/${siteConfig.xAccount}` }] : []),
+	...siteConfig.links,
+].map((link) => {
+	const service = linkService(link.url);
+	// The creator's own text first; otherwise the service's name, or the site's domain for any other site.
+	return { ...link, text: link.label || service?.name || new URL(link.url).hostname.replace(/^www\./, ''), logo: service?.logo };
+});
 
-// The address without https://, www. and a trailing slash: the row's text, so readers see where it goes.
-function shownUrl(url: string) {
-	const { hostname, pathname, search } = new URL(url);
-	return `${hostname.replace(/^www\./, '')}${pathname === '/' ? '' : pathname.replace(/\/$/, '')}${search}`;
-}
+// Twice the shown size, for sharp pictures on high-density screens.
+const avatarUrl = await getAvatarUrl(192, 'webp');
 ---
 
 <Layout title={siteConfig.author} description={siteConfig.profile || siteConfig.description} back={{ href: '/', label: t.backToTop }}>
-	<h1 class="author-name">{siteConfig.author}</h1>
+	{avatarUrl && <img class="author-avatar" src={avatarUrl} width="96" height="96" alt="" />}
+	<h1 class={avatarUrl ? 'author-name author-name--with-avatar' : 'author-name'}>{siteConfig.author}</h1>
 	{siteConfig.profile && <p class="author-profile">{siteConfig.profile}</p>}
 	{links.length > 0 && (
 		<ul class="author-links">
 			{links.map((link) => (
 				<li>
-					{link.note && <p class="author-links__note">{link.note}</p>}
 					<a href={link.url} target="_blank" rel="noopener noreferrer" class="author-links__row">
-						<span class="author-links__url">{link.shown}</span>
+						{link.logo && (
+							<svg class="author-links__logo" viewBox="0 0 24 24" aria-hidden="true"><path d={link.logo} /></svg>
+						)}
+						<span class="author-links__body">
+							<span class="author-links__text">{link.text}</span>
+							{link.note && <span class="author-links__note">{link.note}</span>}
+						</span>
 						<span class="author-links__mark" aria-hidden="true">↗</span>
 					</a>
 				</li>
@@ -33,6 +42,20 @@ function shownUrl(url: string) {
 </Layout>
 
 <style>
+	/* Decorative (the name below says who it is), so no alt text. */
+	.author-avatar {
+		display: block;
+		width: 6rem;
+		height: 6rem;
+		margin: 0 auto 0.75rem;
+		border-radius: 50%;
+		object-fit: cover;
+	}
+
+	.author-name--with-avatar {
+		text-align: center;
+	}
+
 	.author-name {
 		font-size: 1.5rem;
 		margin: 0 0 1rem;
@@ -56,23 +79,24 @@ function shownUrl(url: string) {
 	}
 
 	/* Same text style as the profile. */
-	.author-links__note {
-		margin: 0 0 0.4rem;
-		line-height: 1.8;
-		white-space: pre-line;
-		overflow-wrap: anywhere;
-	}
 
-	/* Same look as a table of contents row. */
+	/* The whole box is the link: logo, name (with the description under it), and the mark that it opens another site. */
 	.author-links__row {
 		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 1rem;
+		align-items: center;
+		gap: 0.75rem;
 		border: 1px solid var(--border);
-		border-radius: 0.4rem;
-		padding: 0.6rem 0.9rem;
-		color: var(--accent);
+		border-radius: 0.6rem;
+		padding: 0.85rem 1rem;
+		color: var(--text);
+	}
+
+	/* One color, the text's, as the brands allow for their marks. */
+	.author-links__logo {
+		flex-shrink: 0;
+		width: 1.4rem;
+		height: 1.4rem;
+		fill: currentColor;
 	}
 
 	.author-links__row:hover {
@@ -80,12 +104,28 @@ function shownUrl(url: string) {
 		border-color: var(--accent);
 	}
 
-	.author-links__url {
+	.author-links__body {
+		flex: 1;
 		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+	}
+
+	/* Long button text wraps rather than being cut off on phones. */
+	.author-links__text {
+		font-size: 1.05rem;
 		font-weight: 600;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+		overflow-wrap: anywhere;
+	}
+
+	/* The creator's description of the link, under its name inside the box. */
+	.author-links__note {
+		font-size: 0.875rem;
+		line-height: 1.7;
+		color: var(--text-muted);
+		white-space: pre-line;
+		overflow-wrap: anywhere;
 	}
 
 	.author-links__mark {
